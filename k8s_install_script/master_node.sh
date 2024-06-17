@@ -35,7 +35,7 @@ sudo rm -rf /etc/containerd/config.toml
 sudo systemctl enable --now containerd
 
 # master node init
-sudo kubeadm init --control-plane-endpoint=[master node domain or master node ip] --pod-network-cidr=10.0.0.0/16
+sudo kubeadm init --control-plane-endpoint=[DOMAIN OR IP] --pod-network-cidr=[POD CIDR]
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config

@@ -46,9 +46,11 @@
   - 대수: 3
   - 사양: 4CPU, 4GB RAM
 - 그 외 세부사항
+  - K8S Version: v1.28
   - CNI: Calico
   - Pod CIDR: 10.0.0.0/16
   - Container Runtime: Containerd
+  
 
 
 
@@ -72,5 +74,118 @@
 
 
 
+## 구성도
+
+
+
+
+
 ## 구축 과정
+
+-----------------------
+
+### K8S 구축 (Master Node, Worker Node)
+
+#### 1. Hostname 변경
+
+```bash
+sudo hostnamectl set-hostname [HOST NAME]
+```
+
+
+
+#### 2. Git 저장소 가져오기
+
+```bash
+sudo yum install git -y
+```
+
+``` 
+git clone https://github.com/gweowe/3-tier-architecture-project.git
+```
+
+```bash
+cd ./3-tier-architecture-project
+```
+
+
+
+#### 3. 구축 스크립트 실행
+
+##### Master Node
+
+```bash
+chmod 755 ./k8s_install_script/master_node.sh
+```
+
+```bash
+vi ./k8s_install_script/master_node.sh
+```
+
+```
+# 41 line edit
+sudo kubeadm init --control-plane-endpoint=[DOMAIN OR IP] --pod-network-cidr=[POD CIDR]
+```
+
+```bash
+./k8s_install_script/master_node.sh
+```
+
+
+
+##### Worker Node 1 ~ 3
+
+```bash
+chmod 755 ./k8s_install_script/worker_node.sh
+```
+
+```bash
+./k8s_install_script/worker_node.sh
+```
+
+
+
+#### 4. join 작업 수행
+
+##### Master Node
+
+```bash
+kubeadm token create --print-join-command
+```
+
+##### Worker Node 1 ~ 3
+
+```bash
+[INSERT THE RESULT OUTPUT FROM THE MASTER NODE]
+```
+
+
+
+
+
+#### 5. 구축 상태 확인
+
+```bash
+kubectl get node
+```
+
+##### output:
+
+```
+NAME            STATUS   ROLES           AGE     VERSION
+master-node-1   Ready    control-plane   3m45s   v1.28.11
+worker-node-1   Ready    <none>          3m1s    v1.28.11
+worker-node-2   Ready    <none>          2m53s   v1.28.11
+worker-node-3   Ready    <none>          3m1s    v1.28.11
+```
+
+만약 `STATUS`가 `NotReady`일 경우 Node 정보에서 Conditions 항목 확인하여 Troubleshooting 진행
+
+```bash
+kubectl describe node [NODE NAME]
+```
+
+----------------
+
+### 3 Tier 구축
 

@@ -14,6 +14,9 @@ net.bridge.bridge-nf-call-ip6tables = 1
 EOF
 sudo sysctl --system
 
+# git 설치
+sudo yum install git -y
+
 # k8s 설치
 sudo yum update -y
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
