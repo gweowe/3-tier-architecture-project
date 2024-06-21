@@ -56,19 +56,23 @@
 
 #### Web
 
-(미정)
+- Name: Nginx
+- Version: 1.27.0
 
 
 
 #### WAS
 
-(미정)
+- Name: Tomcat
+- Version: 10.1.24
+- JDK: 21.0.3
 
-
+- JDBC: Postgres 42.7.3
 
 #### DB
 
-(미정)
+- Name: Postgres
+- Version: 16.3.1
 
 
 
@@ -161,8 +165,6 @@ kubeadm token create --print-join-command
 
 
 
-
-
 #### 5. 구축 상태 확인
 
 ```bash
@@ -187,5 +189,384 @@ kubectl describe node [NODE NAME]
 
 ----------------
 
-### 3 Tier 구축
+### 3-Tier 구축 (Nginx, Tomcat, Postgres)
 
+#### 1. Docker Network 생성
+
+```bash
+docker network create temp_network
+```
+
+
+
+#### 2. Base Image 실행
+
+##### Nginx
+
+```bash
+docker run -d --name nginx --network temp_network -p 80:80 -e TZ=Asia/Seoul nginx:1.27.0
+```
+
+##### Tomcat
+
+```bash
+docker run -d --name tomcat --network temp_network -p 8080:8080 -e TZ=Asia/Seoul tomcat:10.1.24
+```
+
+##### Postgres
+
+```bash
+docker run -d --name postgres --network temp_network -p 5432:5432 -e POSTGRES_PASSWORD=[PASSWORD] -e TZ=Asia/Seoul postgres:16.3
+```
+
+
+
+#### 3. 3-Tier 연동 작업 수행
+
+##### Nginx
+
+```bash
+docker exec -it nginx /bin/bash
+```
+
+```bash
+apt-get update
+```
+
+```bash
+apt-get install vim -y
+```
+
+```bash
+vi ~/.vimrc
+```
+
+###### .vimrc
+
+```
+set expandtab
+set tabstop=2
+```
+
+```bash
+vi /etc/nginx/conf.d/default.conf
+```
+
+###### default.conf
+
+```
+# -------------------- 생략 --------------------
+
+	location ~ \.(css|js|jpg|jpeg|gif|png|html|jsp)$ {
+								proxy_pass http://tomcat:8080;
+								proxy_set_header X-Real-IP $remote_addr;
+								proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+								proxy_set_header Host $http_host;
+	}
+
+# -------------------- 생략 --------------------
+```
+
+```bash
+nginx -s reload
+```
+
+##### Tomcat
+
+```bash
+docker exec -it tomcat /bin/bash
+```
+
+```bash
+apt-get update
+```
+
+```bash
+apt-get install vim -y
+```
+
+```bash
+vi ~/.vimrc
+```
+
+###### .vimrc
+
+```
+set expandtab
+set tabstop=2
+```
+
+```bash
+wget https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
+```
+
+```bash
+mv ./postgresql-42.7.3.jar /usr/local/tomcat/lib/
+```
+
+```bash
+vi /usr/local/tomcat/conf/context.xml
+```
+
+###### context.xml
+
+```
+# -------------------- 생략 --------------------
+
+<Context>
+	<Resource name="jdbc/postgresql"
+						auth="Container"
+						type="javax.sql.DataSource"
+						driverClassName="org.postgresql.Driver"
+						loginTimeout="10"
+						maxWait="5000"
+						username="postgres"
+						password="[PSQL USER PASSWORD]"
+						url="jdbc:postgresql://postgres:5432/user_data" /> # K8S에 올린 후 Postgres의 Pod IP로 변경해야 함
+</Context>
+  
+# -------------------- 생략 --------------------
+```
+
+```bash
+vi /usr/local/tomcat/conf/web.xml
+```
+
+###### web.xml
+
+```
+<web-app>
+
+# -------------------- 생략 --------------------
+
+	<resource-ref>
+		<description>PGSQL DB Connection</description>
+		<res-ref-name>jdbc/postgresql</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+    
+# -------------------- 생략 --------------------
+</web-app>
+```
+
+```bash
+mkdir /usr/local/tomcat/webapps/ROOT
+```
+
+```bash
+vi /usr/local/tomcat/webapps/ROOT/user.jsp
+```
+
+###### user.jsp
+
+```
+<%@ page import="java.sql.*, javax.naming.*, javax.sql.DataSource" %>
+<%@ page import="java.io.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Information</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>User Information</h2>
+    <form method="get">
+      <label for="filter">Filter by name:</label>
+      <input type="text" id="filter" name="filter" value="<%= request.getParameter("filter") != null ? request.getParameter("filter") : "" %>">
+      <input type="submit" value="Filter">
+    </form>
+    <br>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Number</th>
+        <th>Etc</th>
+      </tr>
+      <%
+        String filter = request.getParameter("filter");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+          Context initContext = new InitialContext();
+          Context envContext  = (Context)initContext.lookup("java:/comp/env");
+          DataSource ds = (DataSource)envContext.lookup("jdbc/postgresql");
+          conn = ds.getConnection();
+
+          String sql = "SELECT name, email, number, etc FROM user_info";
+          if (filter != null && !filter.isEmpty()) {
+            sql += " WHERE name LIKE ?";
+          }
+
+          stmt = conn.prepareStatement(sql);
+          if (filter != null && !filter.isEmpty()) {
+            stmt.setString(1, "%" + filter + "%");
+          }
+
+          rs = stmt.executeQuery();
+
+          while (rs.next()) {
+            String name = rs.getString("name");
+            String email = rs.getString("email");
+            String number = rs.getString("number");
+            String etc = rs.getString("etc");
+      %>
+      <tr>
+        <td><%= name %></td>
+        <td><%= email %></td>
+        <td><%= number %></td>
+        <td><%= etc %></td>
+      </tr>
+      <%
+          }
+        } catch (Exception e) {
+          out.println("Error: " + e.getMessage());
+          StringWriter sw = new StringWriter();
+          PrintWriter pw = new PrintWriter(sw);
+          e.printStackTrace(pw);
+          out.println(sw.toString());
+        } finally {
+          if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
+          if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+          if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+      %>
+    </table>
+  </body>
+</html>
+```
+
+```bash
+exit
+```
+
+```bash
+docker restart tomcat
+```
+
+##### Postgres
+
+```bash
+docker exec -it postgres /bin/bash
+```
+
+```bash
+apt-get update
+```
+
+```bash
+apt-get install vim -y
+```
+
+```bash
+vi ~/.vimrc
+```
+
+###### .vimrc
+
+```
+set expandtab
+set tabstop=2
+```
+
+```bash
+vi /var/lib/postgresql/data/pg_hba.conf
+```
+
+###### pg_hba.conf
+
+```
+# -------------------- 생략 --------------------
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+
+# -------------------- 생략 --------------------
+```
+
+```bash
+psql -U postgres
+```
+
+```bash
+CREATE DATABASE user_data;
+```
+
+```bash
+\c user_data
+```
+
+```bash
+CREATE TABLE user_info (
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    number VARCHAR(255) NOT NULL,
+    ETC VARCHAR(255) NULL
+);
+```
+
+```bash
+INSERT INTO user_info (name, email, number, etc)
+VALUES ('', '', '', '');
+```
+
+
+
+#### 4. docker container를 image로 올리기
+
+```bash
+docker commit -a "gweowe" nginx gweowe/nginx:latest
+```
+
+```bash
+docker commit -a "gweowe" tomcat gweowe/tomcat:latest
+```
+
+```bash
+docker commit -a "gweowe" postgres gweowe/postgres:latest
+```
+
+
+
+#### 5. docker image docker hub에 올리기
+
+```bash
+docker push gweowe/nginx:latest
+```
+
+```bash
+docker push gweowe/tomcat:latest
+```
+
+```bash
+docker push gweowe/postgres:latest
+```
