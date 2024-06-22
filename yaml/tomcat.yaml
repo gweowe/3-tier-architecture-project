@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tomcat-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /tomcat/
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker-node-2
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tomcat-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      containers:
+      - name: tomcat
+        image: tomcat:10.1.24
+        volumeMounts:
+        - mountPath: /usr/local/tomcat/
+          name: tomcat-storage
+      volumes:
+      - name: tomcat-storage
+        persistentVolumeClaim:
+          claimName: tomcat-pvc
+
