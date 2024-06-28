@@ -263,7 +263,7 @@ vi /usr/local/tomcat/conf/context.xml
 						loginTimeout="10"
 						maxWait="5000"
 						username="postgres"
-						password="[PSQL USER PASSWORD]"
+						password="gweowe123"
 						url="jdbc:postgresql://master-node-1.gweowe.com:35432/user_data" />
 </Context>
   
@@ -490,6 +490,10 @@ exit
 ```
 
 ```bash
+pg_dumpall -U postgres -f /var/lib/postgresql/backup.pgsql
+```
+
+```bash
 exit
 ```
 
@@ -563,4 +567,23 @@ kubectl apply -f ./yaml/tomcat.yaml
 kubectl apply -f ./yaml/postgresql.yaml
 ```
 
-(3Tier 연결은 확인되었으나 Docker에서 생성한 PostgreSQL의 Database가 사라지는 문제 발생)
+```bash
+kubectl exec -it [POSTGRESQL POD NAME] /bin/bash
+```
+
+```bash
+psql -U postgres -f /var/lib/postgresql/backup.pgsql
+```
+
+```bash
+psql -U postgres
+```
+
+```bash
+DROP DATABASE user_database;
+```
+
+Backup & Restore를 진행할 경우 `user_database`라는 Database가 생성되는데 이유를 모르겠다.
+
+-----------
+
