@@ -140,7 +140,6 @@ SET default_table_access_method = heap;
 CREATE TABLE public.user_info (
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    number character varying(255) NOT NULL,
     etc character varying(255)
 );
 
@@ -151,9 +150,8 @@ ALTER TABLE public.user_info OWNER TO postgres;
 -- Data for Name: user_info; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.user_info (name, email, number, etc) FROM stdin;
-			
-dwwon	dw.won@ddimtech.com	010-4520-5165	test
+COPY public.user_info (name, email, etc) FROM stdin;
+test_user	test_user@testdomain.com	test
 \.
 
 

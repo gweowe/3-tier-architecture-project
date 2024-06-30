@@ -1,5 +1,3 @@
-
-
 ## 구축 과정
 
 ### K8S 구축 (Master Node, Worker Node)
@@ -187,7 +185,7 @@ vi /etc/nginx/conf.d/default.conf
 ```
 # -------------------- 생략 --------------------
 
-	location ~ \.(css|js|jpg|jpeg|gif|png|jsp)$ {
+	location ~ \.(js|jsp)$ {
 								proxy_pass http://master-node-1.gweowe.com:38080;
 								proxy_set_header X-Real-IP $remote_addr;
 								proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -195,6 +193,179 @@ vi /etc/nginx/conf.d/default.conf
 	}
 
 # -------------------- 생략 --------------------
+```
+
+```bash
+vi /usr/share/nginx/html/index.html
+```
+
+###### index.html
+
+```
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Welcome to My Page</h1>
+        <nav>
+          <ul>
+            <li><a href="http://master-node-1.gweowe.com:30080/user.jsp">User Page</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <img src="https://cdnweb01.wikitree.co.kr/webdata/editor/202301/19/202301192120491722.jpg" alt="Cute Chinchilla" class="cute-chinchilla">
+      </main>
+      <footer>
+        <p>© gweowe Page. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>
+
+```
+
+```bash
+mkdir /usr/share/nginx/html/css
+```
+
+```bash
+vi /usr/share/nginx/html/css/style.css
+```
+
+###### style.css
+
+```bash
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #FFFAF0; /* Bright pastel yellow */
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+.container {
+  width: 100%;
+  margin: 0 auto;
+  background-color: #ffffff; /* White background for content */
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 50px;
+  border-radius: 8px;
+  max-width: 800px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+header h1 {
+  margin: 0;
+  color: #333;
+}
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+nav ul li {
+  display: inline;
+  margin-right: 15px;
+}
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s;
+}
+nav ul li a:hover {
+  color: #FF6347; /* Tomato color */
+}
+main {
+  margin-top: 20px;
+}
+.intro,
+.cta {
+  margin-bottom: 20px;
+}
+.cta .btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #FF6347; /* Tomato color */
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.cta .btn:hover {
+  background-color: #FF4500; /* OrangeRed */
+}
+footer {
+  text-align: center;
+  padding: 10px 0;
+  border-top: 2px solid #333;
+  margin-top: 20px;
+  color: #777;
+  font-size: 0.9em;
+}
+.cute-chinchilla {
+  display: block;
+  width: 800px;
+  height: 400px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+h2 {
+  color: #333;
+}
+form {
+  margin-bottom: 20px;
+}
+label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+input[type="text"] {
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+input[type="submit"] {
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type="submit"]:hover {
+  background-color: #218838;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #ddd;
+}
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+th {
+  background-color: #007bff;
+  color: white;
+}
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
 ```
 
 ```bash
@@ -310,88 +481,71 @@ vi /usr/local/tomcat/webapps/ROOT/user.jsp
 <html>
   <head>
     <title>User Information</title>
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      table, th, td {
-        border: 1px solid black;
-      }
-      th, td {
-        padding: 8px;
-        text-align: left;
-      }
-      th {
-        background-color: #f2f2f2;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
   <body>
-    <h2>User Information</h2>
-    <form method="get">
-      <label for="filter">Filter by name:</label>
-      <input type="text" id="filter" name="filter" value="<%= request.getParameter("filter") != null ? request.getParameter("filter") : "" %>">
-      <input type="submit" value="Filter">
-    </form>
-    <br>
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Number</th>
-        <th>Etc</th>
-      </tr>
-      <%
-        String filter = request.getParameter("filter");
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-          Context initContext = new InitialContext();
-          Context envContext  = (Context)initContext.lookup("java:/comp/env");
-          DataSource ds = (DataSource)envContext.lookup("jdbc/postgresql");
-          conn = ds.getConnection();
+    <div class="container">
+      <h2>User Information</h2>
+      <form method="get">
+        <label for="filter">Filter by name:</label>
+        <input type="text" id="filter" name="filter" value="<%= request.getParameter("filter") != null ? request.getParameter("filter") : "" %>">
+        <input type="submit" value="Filter">
+      </form>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Etc</th>
+        </tr>
+        <% 
+          String filter = request.getParameter("filter");
+          Connection conn = null;
+          PreparedStatement stmt = null;
+          ResultSet rs = null;
+          try {
+            Context initContext = new InitialContext();
+            Context envContext  = (Context)initContext.lookup("java:/comp/env");
+            DataSource ds = (DataSource)envContext.lookup("jdbc/postgresql");
+            conn = ds.getConnection();
 
-          String sql = "SELECT name, email, number, etc FROM user_info";
-          if (filter != null && !filter.isEmpty()) {
-            sql += " WHERE name LIKE ?";
+            String sql = "SELECT name, email, etc FROM user_info";
+            if (filter != null && !filter.isEmpty()) {
+              sql += " WHERE name LIKE ?";
+            }
+
+            stmt = conn.prepareStatement(sql);
+            if (filter != null && !filter.isEmpty()) {
+              stmt.setString(1, "%" + filter + "%");
+            }
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+              String name = rs.getString("name");
+              String email = rs.getString("email");
+              String etc = rs.getString("etc");
+        %>
+        <tr>
+          <td><%= name %></td>
+          <td><%= email %></td>
+          <td><%= etc %></td>
+        </tr>
+        <% 
+            }
+          } catch (Exception e) {
+            out.println("Error: " + e.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            out.println(sw.toString());
+          } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
+            if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
           }
-
-          stmt = conn.prepareStatement(sql);
-          if (filter != null && !filter.isEmpty()) {
-            stmt.setString(1, "%" + filter + "%");
-          }
-
-          rs = stmt.executeQuery();
-
-          while (rs.next()) {
-            String name = rs.getString("name");
-            String email = rs.getString("email");
-            String number = rs.getString("number");
-            String etc = rs.getString("etc");
-      %>
-      <tr>
-        <td><%= name %></td>
-        <td><%= email %></td>
-        <td><%= number %></td>
-        <td><%= etc %></td>
-      </tr>
-      <%
-          }
-        } catch (Exception e) {
-          out.println("Error: " + e.getMessage());
-          StringWriter sw = new StringWriter();
-          PrintWriter pw = new PrintWriter(sw);
-          e.printStackTrace(pw);
-          out.println(sw.toString());
-        } finally {
-          if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
-          if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-          if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
-        }
-      %>
-    </table>
+        %>    
+      </table>
+    </div>
   </body>
 </html>
 ```
@@ -475,14 +629,13 @@ CREATE DATABASE user_data;
 CREATE TABLE user_info (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    number VARCHAR(255) NOT NULL,
     ETC VARCHAR(255) NULL
 );
 ```
 
 ```bash
-INSERT INTO user_info (name, email, number, etc)
-VALUES ('', '', '', '');
+INSERT INTO user_info (name, email, etc)
+VALUES ('', '', '');
 ```
 
 ```bash
