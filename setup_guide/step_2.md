@@ -1,8 +1,12 @@
 ## 구축 과정
 
-### NFS 서버 구축 및 PV 재설정 (NFS Server)
+### NFS 서버 구축 (NFS Server)
 
-#### 1. nfs 패키지 설치
+#### 1. 사전 작업 및 nfs 패키지 설치
+
+```bash
+sudo systemctl disable --now firewalld
+```
 
 ```bash
 sudo yum update -y
@@ -12,7 +16,7 @@ sudo yum update -y
 sudo yum install nfs-utils -y
 ```
 
-
+d
 
 #### 2. nfs 서비스 실행
 
@@ -40,13 +44,13 @@ git clone https://github.com/gweowe/3-tier-architecture-project.git
 sudo vi /etc/exports
 ```
 
-###### exports
+##### exports
 
 ```
-[USER HOME PATH] [SHARE SERVER IP](rw,no_root_squash,sync)
+[GIT DERECTORY PATH] [SHARE SERVER CIDR](rw,no_root_squash,sync)
 
 # ex)
-# /home/gweowe/ 1.1.*.*(rw,no_root_squash,sync)
+# /home/nfs/3-tier-architecture-project 1.1.0.0/24(rw,no_root_squash,sync)
 ```
 
 
@@ -63,33 +67,124 @@ sudo exportfs -v
 
 
 
-#### 6. yaml 파일 수정
+------
+
+### PV 재설정 (Client Server)
+
+#### 1. yaml 파일 수정 
+
+`pv`를 `local`에서 `nfs`로 변경
+
+##### Nginx
+
+```bash
+vi ./yaml/nginx.yaml
+```
+
+###### nginx.yaml
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-data-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  nfs:
+    path: /nginx/data/nginx
+    server: [NFS SERVER IP]
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-conf-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  nfs:
+    path: /nginx/data/nginx
+    server: [NFS SERVER IP]
+
+# -------------------- 생략 --------------------
+```
+
+##### Tomcat
+
+```bash
+vi ./yaml/tomcat.yaml
+```
+
+###### tomcat.yaml
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tomcat-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  nfs:
+    path: /tomcat/tomcat
+    server: [NFS SERVER IP]
+    
+# -------------------- 생략 --------------------
+```
+
+##### Postgresql
+
+```bash
+vi ./yaml/postgresql.yaml
+```
+
+###### postgresql.yaml
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  nfs:
+    path: /postgresql/postgresql
+    server: [NFS SERVER IP]
+    
+# -------------------- 생략 --------------------
+```
+
+
+
+#### 2. 3-Tier 파일 재배포
+
+```bash
+kubectl delete -f ./yaml/nginx.yaml
+```
+
+```bash
+kubectl apply -f ./yaml/nginx.yaml
+```
 
 
 
 ----------------
 
 ### Web/WAS/DB 이중화
-
-#### 
-
-```bash
-sudo hostnamectl set-hostname [HOST NAME]
-```
-
-
-
-#### 2. Git 저장소 가져오기
-
-```bash
-sudo yum install git -y
-```
-
-``` 
-git clone https://github.com/gweowe/3-tier-architecture-project.git
-```
-
-```bash
-cd ./3-tier-architecture-project
-```
-

@@ -16,6 +16,7 @@ sudo sysctl --system
 
 # k8s 설치
 sudo yum update -y
+sudo yum install nfs-utils -y
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes

@@ -9,16 +9,9 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
-  local:
+  nfs:
     path: /postgresql/postgresql
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - worker-node-3
+    server: 77.88.120.210
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

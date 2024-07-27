@@ -125,9 +125,25 @@ spec:
 
 ----------------
 
-### 3-Tier 구축을 위한 사전 작업
+### 3-Tier 구축을 위한 사전 작업 (Client Server)
 
-#### 1. Base Image 실행
+#### 1. Git 저장소 가져오기
+
+```bash
+sudo yum install git -y
+```
+
+``` 
+git clone https://github.com/gweowe/3-tier-architecture-project.git
+```
+
+```bash
+cd ./3-tier-architecture-project
+```
+
+
+
+#### 2. Base Image 실행
 
 ##### Nginx
 
@@ -149,7 +165,7 @@ docker run -d --name postgresql -p 5432:5432 -e POSTGRES_PASSWORD=gweowe123 -e T
 
 
 
-#### 2. 3-Tier 설정 파일 수정 및 백업
+#### 3. 3-Tier 설정 파일 수정 및 백업
 
 ##### Nginx
 
@@ -676,7 +692,7 @@ scp -r ./postgresql root@[WORKER NODE 3 IP]:/
 
 ----------------
 
-### 3-Tier 배포
+### 3-Tier 배포 (Client Server)
 
 #### 1. Storage Class 생성
 
