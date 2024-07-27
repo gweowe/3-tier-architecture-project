@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /tomcat/tomcat
+    path: /home/nfs/3-tier-architecture-project/tomcat/tomcat
     server: 77.88.120.210
 ---
 apiVersion: v1

@@ -25,7 +25,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /home/nfs/3-tier-architecture-project/nginx/data/nginx
+    path: /home/nfs/3-tier-architecture-project/nginx/conf/nginx
     server: 77.88.120.210
 ---
 apiVersion: v1

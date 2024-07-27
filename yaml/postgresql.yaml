@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /postgresql/postgresql
+    path: /home/nfs/3-tier-architecture-project/postgresql/postgresql
     server: 77.88.120.210
 ---
 apiVersion: v1

@@ -16,7 +16,7 @@ sudo yum update -y
 sudo yum install nfs-utils -y
 ```
 
-d
+
 
 #### 2. nfs 서비스 실행
 
@@ -96,7 +96,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /nginx/data/nginx
+    path: [GIT CLONE PATH]/nginx/data/nginx
     server: [NFS SERVER IP]
 ---
 apiVersion: v1
@@ -111,7 +111,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /nginx/data/nginx
+    path: [GIT CLONE PATH]/nginx/conf/nginx
     server: [NFS SERVER IP]
 
 # -------------------- 생략 --------------------
@@ -138,7 +138,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /tomcat/tomcat
+    path: [GIT CLONE PATH]/tomcat/tomcat
     server: [NFS SERVER IP]
     
 # -------------------- 생략 --------------------
@@ -165,7 +165,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   nfs:
-    path: /postgresql/postgresql
+    path: [GIT CLONE PATH]/postgresql/postgresql
     server: [NFS SERVER IP]
     
 # -------------------- 생략 --------------------
@@ -175,6 +175,8 @@ spec:
 
 #### 2. 3-Tier 파일 재배포
 
+##### Nginx
+
 ```bash
 kubectl delete -f ./yaml/nginx.yaml
 ```
@@ -183,8 +185,44 @@ kubectl delete -f ./yaml/nginx.yaml
 kubectl apply -f ./yaml/nginx.yaml
 ```
 
+##### Tomcat
+
+```bash
+kubectl delete -f ./yaml/tomcat.yaml
+```
+
+```bash
+kubectl apply -f ./yaml/tomcat.yaml
+```
+
+##### Postgresql
+
+```bash
+kubectl delete -f ./yaml/postgresql.yaml
+```
+
+```bash
+kubectl apply -f ./yaml/postgresql.yaml
+```
+
+```bash
+kubectl exec -it [POSTGRESQL POD NAME] /bin/bash
+```
+
+```bash
+psql -U postgres -f /var/lib/postgresql/backup.pgsql
+```
+
+```bash
+psql -U postgres
+```
+
+```bash
+DROP DATABASE user_database;
+```
+
 
 
 ----------------
 
-### Web/WAS/DB 이중화
+### 3-Tier 이중화
