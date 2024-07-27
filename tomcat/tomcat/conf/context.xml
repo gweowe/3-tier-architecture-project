@@ -24,7 +24,7 @@
 						loginTimeout="10"
 						maxWait="5000"
 						username="postgres"
-						password="1021"
+						password="gweowe123"
 						url="jdbc:postgresql://master-node-1.gweowe.com:35432/user_data" />
 
     <!-- Default set of monitored resources. If one of these changes, the    -->

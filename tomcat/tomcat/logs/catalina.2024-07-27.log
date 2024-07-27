@@ -1,0 +1,63 @@
+27-Jul-2024 13:54:14.038 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/10.1.24
+27-Jul-2024 13:54:14.043 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          May 9 2024 17:41:23 UTC
+27-Jul-2024 13:54:14.043 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 10.1.24.0
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            3.10.0-1160.119.1.el7.x86_64
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /opt/java/openjdk
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           21.0.3+9-LTS
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Eclipse Adoptium
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /usr/local/tomcat
+27-Jul-2024 13:54:14.044 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /usr/local/tomcat
+27-Jul-2024 13:54:14.057 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties
+27-Jul-2024 13:54:14.057 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+27-Jul-2024 13:54:14.062 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/usr/local/tomcat
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/usr/local/tomcat
+27-Jul-2024 13:54:14.063 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/usr/local/tomcat/temp
+27-Jul-2024 13:54:14.066 WARNING [main] org.apache.catalina.core.AprLifecycleListener.init The Apache Tomcat Native library failed to load. The error reported was [/usr/local/tomcat/native-jni-lib/libtcnative-2.so.0.0.7: /usr/local/tomcat/native-jni-lib/libtcnative-2.so.0.0.7: cannot open shared object file: No such file or directory (Possible cause: can't load AARCH64 .so on a AMD 64 platform)]
+	java.lang.UnsatisfiedLinkError: /usr/local/tomcat/native-jni-lib/libtcnative-2.so.0.0.7: /usr/local/tomcat/native-jni-lib/libtcnative-2.so.0.0.7: cannot open shared object file: No such file or directory (Possible cause: can't load AARCH64 .so on a AMD 64 platform)
+		at java.base/jdk.internal.loader.NativeLibraries.load(Native Method)
+		at java.base/jdk.internal.loader.NativeLibraries$NativeLibraryImpl.open(NativeLibraries.java:331)
+		at java.base/jdk.internal.loader.NativeLibraries.loadLibrary(NativeLibraries.java:197)
+		at java.base/jdk.internal.loader.NativeLibraries.loadLibrary(NativeLibraries.java:139)
+		at java.base/jdk.internal.loader.NativeLibraries.findFromPaths(NativeLibraries.java:259)
+		at java.base/jdk.internal.loader.NativeLibraries.loadLibrary(NativeLibraries.java:251)
+		at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2451)
+		at java.base/java.lang.Runtime.loadLibrary0(Runtime.java:916)
+		at java.base/java.lang.System.loadLibrary(System.java:2063)
+		at org.apache.tomcat.jni.Library.<init>(Library.java:62)
+		at org.apache.tomcat.jni.Library.initialize(Library.java:147)
+		at org.apache.catalina.core.AprLifecycleListener.init(AprLifecycleListener.java:189)
+		at org.apache.catalina.core.AprLifecycleListener.lifecycleEvent(AprLifecycleListener.java:131)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:114)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:402)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:126)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:708)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:731)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+		at org.apache.catalina.startup.Bootstrap.load(Bootstrap.java:302)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:472)
+27-Jul-2024 13:54:14.353 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+27-Jul-2024 13:54:14.372 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [511] milliseconds
+27-Jul-2024 13:54:14.465 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+27-Jul-2024 13:54:14.465 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/10.1.24]
+27-Jul-2024 13:54:14.484 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/ROOT]
+27-Jul-2024 13:54:14.905 WARNING [main] java.util.ArrayList.forEach Name = postgresql Property maxWait is not used in DBCP2 , use maxWaitMillis instead. maxWaitMillis default value is PT-0.001S. You have set value of "5000" for "maxWait" property, which is being ignored.
+27-Jul-2024 13:54:14.905 INFO [main] java.util.ArrayList.forEach Name = postgresql Ignoring unknown property: value of "10" for "loginTimeout" property
+27-Jul-2024 13:54:14.943 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+27-Jul-2024 13:54:14.996 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/ROOT] has finished in [512] ms
+27-Jul-2024 13:54:14.999 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+27-Jul-2024 13:54:15.007 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [633] milliseconds
+27-Jul-2024 14:10:55.152 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Undeploying context []
+27-Jul-2024 14:10:55.167 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/usr/local/tomcat/webapps/ROOT]
+27-Jul-2024 14:10:55.239 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+27-Jul-2024 14:10:55.241 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/ROOT] has finished in [74] ms
