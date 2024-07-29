@@ -5,7 +5,7 @@
 <html>
   <head>
     <title>User Information</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="http://nginx.gweowe.com/css/style.css">
   </head>
   <body>
     <div class="container">
