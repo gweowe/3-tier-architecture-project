@@ -223,6 +223,171 @@ DROP DATABASE user_database;
 
 
 
-----------------
+-------
 
-### 3-Tier 이중화
+### 3-Tier(Web/WAS) 이중화
+
+#### 1. MetalLB 배포
+
+``` bash
+kubectl create ns metallb-system
+```
+
+```bash
+helm upgrade --install -n metallb-system metallb oci://registry-1.docker.io/bitnamicharts/metallb
+```
+
+```bash
+vi ./yaml/metallb_config.yaml
+```
+
+##### metallb_config.yaml
+
+```
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: metallb-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - [K8S MASTER NODE VIRTUAL IP]/32
+  autoAssign: true
+
+# -------------------- 생략 --------------------
+```
+
+```bash
+kubectl apply -f ./yaml/metallb_config.yaml
+```
+
+
+
+#### 2. Nginx Ingress Controller 배포
+
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+```
+
+```bash
+helm repo update
+```
+
+```bash
+helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace
+```
+
+
+
+#### 3. Nginx 재배포
+
+```bash
+vi ./yaml/nginx.yaml
+```
+
+##### nginx.yaml
+
+```
+# -------------------- 생략 --------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 2
+
+# -------------------- 생략 --------------------
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+  	port: 80
+    targetPort: 80
+```
+
+
+
+#### 4. Tomcat 재배포
+
+```bash
+vi ./yaml/tomcat.yaml
+```
+
+##### tomcat.yaml
+
+```
+# -------------------- 생략 --------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+spec:
+  replicas: 2
+
+# -------------------- 생략 --------------------
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: tomcat-service
+spec:
+  selector:
+    app: tomcat
+  ports:
+  - protocol: TCP
+  	port: 80
+    targetPort: 80
+```
+
+
+
+#### 5. Ingress 배포
+
+```bash
+vi ./yaml/ingress.yaml
+```
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: 3-tier-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: <NGINX HOST DNS>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+  - host: <TOMCAT HOST DNS>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tomcat-service
+            port:
+              number: 8080
+```
+
+```bash
+kubectl apply -f ./yaml/ingress.yaml
+```
+

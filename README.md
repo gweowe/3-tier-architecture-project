@@ -48,6 +48,7 @@
   - 사양: 4CPU, 4GB RAM
 - 그 외 세부사항
   - K8S Version: v1.28
+  - Helm Version: v3.15.3
   - CNI: Calico
   - Pod CIDR: 10.0.0.0/16
   - Container Runtime: Containerd
@@ -72,7 +73,7 @@
 - Name: PostgreSQL
 - Version: 16.3.1
 
-
+##### 
 
 ## 구성도
 
