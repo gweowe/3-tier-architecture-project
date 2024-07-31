@@ -26,3 +26,13 @@ spec:
             name: tomcat-service
             port:
               number: 8080
+  - host: postgresql.gweowe.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: acid-minimal-cluster
+            port:
+              number: 5432

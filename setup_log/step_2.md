@@ -391,3 +391,71 @@ spec:
 kubectl apply -f ./yaml/ingress.yaml
 ```
 
+---------
+
+### 3-Tier(DB) 이중화
+
+#### 1. DB 이중화를 위한 Helm Repository 추가 및 Chart 다운로드
+
+```bash
+cd ./helm
+```
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+```bash
+helm fetch bitnami/postgresql-ha
+```
+
+```bash
+tar -xvf <Postgresql HA File>.tgz
+```
+
+
+
+#### 2. Value 파일 수정
+
+```bash
+vi ./postgresql-ha/values.yaml
+```
+
+##### Values.yaml
+
+```bash
+# -------------------- 생략 --------------------
+
+global:
+  defaultStorageClass: "local-storage"
+
+# -------------------- 생략 --------------------
+
+  postgresql:
+    username: "gweowe"
+    password: "gweowe123"
+    database: "user_data"
+    repmgrUsername: "gweowe"
+    repmgrPassword: "gweowe123"
+    repmgrDatabase: "user_data"
+    
+# -------------------- 생략 --------------------
+
+  pgpool:
+    adminUsername: "gweowe"
+    adminPassword: "gweowe123"
+
+# -------------------- 생략 --------------------
+
+clusterDomain: "gweowe.com"
+
+# -------------------- 생략 --------------------
+
+postgresql:
+	replicaCount: 2
+	
+# -------------------- 생략 --------------------
+```
+
+
+
