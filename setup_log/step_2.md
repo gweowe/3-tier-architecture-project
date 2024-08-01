@@ -225,7 +225,7 @@ DROP DATABASE user_database;
 
 -------
 
-### 3-Tier(Web/WAS) 이중화
+### 3-Tier(Web/WAS) 이중화 - DNS 별도 등록 필요
 
 #### 1. MetalLB 배포
 
@@ -391,12 +391,60 @@ spec:
 kubectl apply -f ./yaml/ingress.yaml
 ```
 
+
+
 ---------
 
-### 3-Tier(DB) 이중화
+### 3-Tier(DB) 이중화 (일단 미룸)
 
-#### 1. 기존 Postgresql 삭제
+#### 1. Nginx Configmap 생성
 
 ```bash
-kubectl delete -f ./yaml/postgresql.yaml
+kubectl apply -f ./yaml/configmap.yaml
 ```
+
+
+
+#### 2. Nginx Ingress Controller 수정
+
+```bash
+kubectl edit service ingress-nginx-controller -n ingress-nginx
+```
+
+```
+# -------------------- 생략 --------------------
+
+spec:
+	ports:
+	- name: postgresql
+   	port: 5432
+    targetPort: 5432
+    protocol: TCP
+    
+# -------------------- 생략 --------------------
+```
+
+```bash
+kubectl edit deployment ingress-nginx-controller -n ingress-nginx
+```
+
+```
+# -------------------- 생략 --------------------
+
+		spec:
+      containers:
+      - args:
+        - /nginx-ingress-controller
+        - --tcp-services-configmap=ingress-nginx/tcp-services
+
+# -------------------- 생략 --------------------
+```
+
+
+
+-------
+
+### Cert Manager를 사용한 인증서 적용
+
+#### 
+
