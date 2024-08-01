@@ -464,7 +464,7 @@ service:
 
 
 
-#### 4. postgresql 배포
+#### 4. Postgresql 배포
 
 ```bash
 helm install postgresql ./postgresql-ha -f ./postgresql-ha/values.yaml
@@ -479,12 +479,12 @@ cd ../
 ```
 
 ```bash
-kubectl cp postgresql-postgresql-ha-postgresql-0:/bitnami/postgresql/ ./postgresql/postgresql
+kubectl cp postgresql-postgresql-ha-postgresql-0:/bitnami/postgresql/ ./postgresql/postgresql --retries 10
 ```
 
 
 
-#### 6. postgresql 삭제
+#### 6. Postgresql 삭제
 
 ```bash
 helm uninstall postgresql
@@ -513,9 +513,17 @@ persistence:
 
 
 
-#### 8. Postgresql PV 및  PVC 배포
+#### 8. Postgresql PV 및 PVC 배포
 
 ```bash
 kubectl apply -f ./yaml/postgresql.yaml
+```
+
+
+
+#### 9. Postgresql 배포
+
+```bash
+helm install postgresql helm/postgresql-ha -f helm/postgresql-ha/values.yaml
 ```
 
