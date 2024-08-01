@@ -1,8 +1,8 @@
-308
-/bitnami/postgresql/data
-1722492219
+1
+/var/lib/postgresql/data
+1722499019
 5432
-/tmp
+/var/run/postgresql
 *
-  6066202         7
+   263179         0
 ready   
