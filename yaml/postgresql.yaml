@@ -24,3 +24,58 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+spec:
+  serviceName: "postgresql"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:16.3
+        env:
+        - name: POSTGRES_DB
+          value: user_data
+        - name: POSTGRES_USER
+          value: gweowe
+        - name: POSTGRES_PASSWORD
+          value: "gweowe123"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgresql-storage
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgresql-service
+spec:
+  selector:
+  name: postgresql-service
+spec:
+  selector:
+    app: postgresql
+  ports:
+  - name: http
+    protocol: TCP
+    port: 5432
+    targetPort: 5432

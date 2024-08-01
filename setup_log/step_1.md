@@ -160,7 +160,7 @@ docker run -d --name tomcat -p 8080:8080 -e TZ=Asia/Seoul tomcat:10.1.24
 ##### PostgreSQL
 
 ```bash
-docker run -d --name postgresql -p 5432:5432 -e POSTGRES_PASSWORD=gweowe123 -e TZ=Asia/Seoul postgres:16.3
+docker run -d --name postgresql -p 5432:5432 -e POSTGRES_USER=gweowe -e POSTGRES_PASSWORD=gweowe123 -e TZ=Asia/Seoul postgres:16.3
 ```
 
 
@@ -644,7 +644,7 @@ listen_addresses = '*'
 ```
 
 ```bash
-psql -U postgres
+psql -U gweowe
 ```
 
 ```bash

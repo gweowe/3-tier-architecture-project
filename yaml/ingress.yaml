@@ -33,6 +33,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: acid-minimal-cluster
+            name: postgresql-postgresql-ha-pgpool
             port:
               number: 5432
