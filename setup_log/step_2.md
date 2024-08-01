@@ -395,42 +395,44 @@ kubectl apply -f ./yaml/ingress.yaml
 
 ### 3-Tier(DB) 이중화
 
-#### 1. DB 이중화를 위한 Helm Repository 추가 및 Chart 다운로드
+[참고자료](https://artifacthub.io/packages/helm/bitnami/postgresql-ha)
+
+#### 1. 기존 Postgresql 삭제
+
+```bash
+kubectl delete -f ./yaml/postgresql.yaml
+```
+
+
+
+#### 2. DB 이중화를 위한 Helm Repository 추가 및 Chart 다운로드
 
 ```bash
 cd ./helm
 ```
 
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add postgresql https://charts.bitnami.com/bitnami
 ```
 
 ```bash
-helm fetch bitnami/postgresql-ha
-```
-
-```bash
-tar -xvf <Postgresql HA File>.tgz
+helm fetch postgresql/postgresql-ha
 ```
 
 
 
-#### 2. Value 파일 수정
+#### 3. Values 파일 수정
 
 ```bash
 vi ./postgresql-ha/values.yaml
 ```
 
-##### Values.yaml
+##### values.yaml
 
-```bash
+```
 # -------------------- 생략 --------------------
 
 global:
-  defaultStorageClass: "local-storage"
-
-# -------------------- 생략 --------------------
-
   postgresql:
     username: "gweowe"
     password: "gweowe123"
@@ -441,21 +443,79 @@ global:
     
 # -------------------- 생략 --------------------
 
-  pgpool:
-    adminUsername: "gweowe"
-    adminPassword: "gweowe123"
+volumePermissions:
+	enabled: true
 
 # -------------------- 생략 --------------------
 
-clusterDomain: "gweowe.com"
+persistence:
+  enabled: false
+  existingClaim: "postgresql-pvc"
+  storageClass: "local-storage"
+  size: 5Gi
 
 # -------------------- 생략 --------------------
 
-postgresql:
-	replicaCount: 2
-	
+service:
+  portName: "postgresql-service"
+  
 # -------------------- 생략 --------------------
 ```
 
 
+
+#### 4. postgresql 배포
+
+```bash
+helm install postgresql ./postgresql-ha -f ./postgresql-ha/values.yaml
+```
+
+
+
+#### 5. 중요 데이터 가져오기
+
+```bash
+cd ../
+```
+
+```bash
+kubectl cp postgresql-postgresql-ha-postgresql-0:/bitnami/postgresql/ ./postgresql/postgresql
+```
+
+
+
+#### 6. postgresql 삭제
+
+```bash
+helm uninstall postgresql
+```
+
+
+
+#### 7. Values 파일 수정
+
+#### 
+
+```bash
+vi ./postgresql-ha/values.yaml
+```
+
+##### values.yaml
+
+```
+# -------------------- 생략 --------------------
+
+persistence:
+  enabled: true
+  
+# -------------------- 생략 --------------------
+```
+
+
+
+#### 8. Postgresql PV 및  PVC 배포
+
+```bash
+kubectl apply -f ./yaml/postgresql.yaml
+```
 
