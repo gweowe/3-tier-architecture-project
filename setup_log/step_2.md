@@ -395,7 +395,7 @@ kubectl apply -f ./yaml/ingress.yaml
 
 -------
 
-### Cert Manager를 사용한 3-Tier(Web/WAS) 인증서 적용
+### 3-Tier(Web/WAS) 인증서 적용
 
 #### 1. Cert Manager 배포
 
@@ -656,7 +656,4 @@ kubectl edit deployment ingress-nginx-controller -n ingress-nginx
 # -------------------- 생략 --------------------
 ```
 
-
-
-#### 7. 
-
+---
