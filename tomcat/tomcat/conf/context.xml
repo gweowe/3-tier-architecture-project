@@ -25,7 +25,7 @@
 						maxWait="5000"
 						username="gweowe"
 						password="gweowe123"
-						url="jdbc:postgresql://postgresql.gweowe.com/user_data" />
+						url="jdbc:postgresql://postgresql.gweowe.com:5432/user_data" />
 
     <!-- Default set of monitored resources. If one of these changes, the    -->
     <!-- web application will be reloaded.                                   -->
