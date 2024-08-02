@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nginx-ingress-certificate
+spec:
+  secretName: nginx-ingress-certificate
+  duration: 2160h
+  renewBefore: 720h
+  issuerRef:
+    name: gweowe-cluster-issuer
+    kind: ClusterIssuer
+  commonName: gweowe.com
+  dnsNames:
+  - nginx.gweowe.com
+  - tomcat.gweowe.com
+  - postgresql.gweowe.com
