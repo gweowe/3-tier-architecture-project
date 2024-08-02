@@ -580,7 +580,7 @@ helm install postgresql ./postgresql-ha -f ./postgresql-ha/values.yaml
 
 
 
-#### 5. Postgresql 데이터 생성
+#### 5. Postgresql 데이터 재생성
 
 ```bash
 kubectl exec -it postgresql-postgresql-ha-postgresql-0 /bin/bash
