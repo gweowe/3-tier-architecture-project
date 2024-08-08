@@ -30,7 +30,7 @@ kind: CronJob
 metadata:
   name: postgres-backup
 spec:
-  schedule: "* */1 * * *"
+  schedule: "0 */1 * * *"
   jobTemplate:
     spec:
       template:
@@ -60,7 +60,7 @@ kind: CronJob
 metadata:
   name: postgres-cleanup
 spec:
-  schedule: "* * */30 * *"
+  schedule: "0 */1 * * *"
   jobTemplate:
     spec:
       template:

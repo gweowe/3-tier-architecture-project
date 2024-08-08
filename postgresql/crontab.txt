@@ -1,2 +1,0 @@
-* */3 * * * pg_dumpall -h postgresql.gweowe.com -U gweowe -W -f ./backup/backup_$(date +\%Y\%m\%d_\%H\%M\%S).sql
-* * * * * find "./backup" -type f -name "*.sql" -mtime +1 -exec rm -f {} \;
