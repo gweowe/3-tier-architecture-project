@@ -673,7 +673,7 @@ exit
 ```
 
 ```bash
-pg_dumpall -U postgres -f /var/lib/postgresql/backup.pgsql
+
 ```
 
 ```bash

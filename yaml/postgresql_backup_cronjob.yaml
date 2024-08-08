@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-backup-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  nfs:
+    path: /home/nfs/3-tier-architecture-project/postgresql/backup
+    server: 77.88.120.210
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-backup-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "* */1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: postgres:latest
+            env:
+            - name: PGPASSWORD
+              value: "gweowe123"
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pg_dumpall -h postgresql.gweowe.com -U gweowe -f /backup/backup_$(date +%Y%m%d_%H%M%S).sql
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: postgresql-backup-pvc
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-cleanup
+spec:
+  schedule: "* * */30 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: postgres:latest
+            env:
+            - name: PGPASSWORD
+              value: "gweowe123"
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+            command:
+            - bin/sh
+            - -c
+            - |
+              find /backup -type f -name *.sql -mtime +1 -exec rm -f {} \;
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: postgresql-backup-pvc
